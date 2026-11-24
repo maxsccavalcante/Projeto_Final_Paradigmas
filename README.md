@@ -42,7 +42,10 @@ curl -X POST localhost:3000/reservas -H 'Content-Type: application/json' \
 
 | Nome | Usuário do GitHub | Parte principal |
 | :--- | :--- | :--- |
-| | | |
+| Max Cavalcante | [maxsccavalcante](https://github.com/maxsccavalcante) | Repositório, `regras.ts`, `main.ts`, resultados do bench |
+| Vitor Nóbrega | | `dominio.ts` (orientado a objetos) |
+| Augusto Lustosa | | `preco.ts` (funcional) |
+| Bruno Dutra | | `bilheteria.ts` (concorrente) |
 
 ### Decisões
 
