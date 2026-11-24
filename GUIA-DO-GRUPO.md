@@ -69,8 +69,14 @@ git commit -m "MENSAGEM INDICADA"
 git push
 ```
 
-Se o `git push` recusar, rodem `git pull` e depois `git push` de novo. Ninguém mexe no arquivo de
-outro, então não há conflito.
+Se o `git push` recusar, rodem `git pull` e depois `git push` de novo. Nos arquivos de `src/`
+ninguém mexe no arquivo de outro, então não há conflito.
+
+O `README.md` é o único arquivo que todos editam. Para não dar conflito: `git pull` **logo antes**
+de editar, editem só a sua resposta e a sua linha da tabela, e façam o commit e o `git push` **logo
+depois**. Se mesmo assim o `git pull` avisar `CONFLICT`, abram o `README.md`, mantenham as duas
+versões (apaguem só as linhas `<<<<<<<`, `=======` e `>>>>>>>`), depois `git add README.md`,
+`git commit` e `git push`.
 
 **Não alterem** `src/tipos.ts`, `src/servidor.ts`, `src/pagamento.ts`, `src/bench.ts` nem
 `testes/`. A correção usa os originais.
@@ -292,7 +298,7 @@ export class Evento {
 
 Sozinho, este arquivo já faz os 3 testes de OO passarem.
 
-**README:** escrevam a resposta da **pergunta 2 (OO)**. Mensagem: `README: pergunta 2 (OO)`.
+**README:** escrevam a resposta da **pergunta 2 (OO)** (texto pronto na seção "README: as respostas já redigidas"). Mensagem: `README: pergunta 2 (OO)`.
 
 ---
 
@@ -343,7 +349,7 @@ export function calcularTotal(ingressos: readonly Ingresso[]): number {
 Neste arquivo **não pode** aparecer `let`, `var`, `for`, `while`, `forEach`, `push` nem `class`.
 O teste lê o arquivo e tira o ponto se aparecer.
 
-**README:** escrevam as respostas das **perguntas 3 e 4**. Mensagem: `README: perguntas 3 e 4 (funcional)`.
+**README:** escrevam as respostas das **perguntas 3 e 4** (texto pronto na seção "README: as respostas já redigidas"). Mensagem: `README: perguntas 3 e 4 (funcional)`.
 
 ---
 
@@ -563,7 +569,7 @@ export function criarBilheteria(config: ConfigBilheteria): Bilheteria {
 }
 ```
 
-**README:** escrevam as respostas das **perguntas 1 e 5**. Mensagem: `README: perguntas 1 e 5 (concorrência)`.
+**README:** escrevam as respostas das **perguntas 1 e 5** (texto pronto na seção "README: as respostas já redigidas"). Mensagem: `README: perguntas 1 e 5 (concorrência)`.
 
 ---
 
