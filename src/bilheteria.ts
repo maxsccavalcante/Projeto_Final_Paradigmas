@@ -1,5 +1,10 @@
 // Passo 5: a venda, onde a concorrência aparece.
-import { DadosInvalidosErro, NaoEncontradoErro, type Evento } from "./dominio.ts";
+import {
+  DadosInvalidosErro,
+  NaoEncontradoErro,
+  PagamentoErro,
+  type Evento,
+} from "./dominio.ts";
 import type { Pagamento } from "./pagamento.ts";
 import { calcularTotal, montarIngressos } from "./preco.ts";
 import { direitoAMeia } from "./regras.ts";
@@ -47,7 +52,14 @@ export class Bilheteria {
     const total = calcularTotal(ingressos);
 
     // 4. Cobra o pagamento.
-    await this.#pagar(total);
+    try {
+      await this.#pagar(total);
+    } catch {
+      // Devolve as poltronas se o pagamento falhar.
+      evento.liberar(poltronas);
+
+      throw new PagamentoErro("a operadora não aprovou o pagamento");
+    }
 
     // 5. Gera o comprovante.
     this.#ultimoReservaId += 1;
