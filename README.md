@@ -45,12 +45,21 @@ curl -X POST localhost:3000/reservas -H 'Content-Type: application/json' \
 | Max Cavalcante | [maxsccavalcante](https://github.com/maxsccavalcante) | Repositório, `regras.ts`, `main.ts`, resultados do bench |
 | Vitor Nóbrega | [Vitornspb](https://github.com/Vitornspb) | `dominio.ts` (orientado a objetos) |
 | Augusto Lustosa | | `preco.ts` (funcional) |
-| Bruno Dutra | | `bilheteria.ts` (concorrente) |
+| Bruno Dutra | [brunodutras](https://github.com/brunodutras) | `bilheteria.ts` (concorrente) |
 
 ### Decisões
 
 1. **Concorrência.** Como vocês garantem que duas pessoas não ficam com a mesma poltrona? Onde estava o
    `await` perigoso?
+
+   No `bilheteria.reservar`, as poltronas são marcadas com `evento.reservar(poltronas)` **antes** do `await` do pagamento. O Node roda o nosso código numa thread só, e um pedido só cede a vez para outro quando chega num `await`. Entre conferir se a poltrona está livre e marcá-la não existe nenhum `await`, então nenhum outro pedido roda no meio. Quem chega depois encontra a poltrona com dono e recebe `PoltronaOcupadaErro` (409) sem ser cobrado.
+
+   O `await` perigoso é o do pagamento. Se a poltrona fosse marcada só depois dele, os 200 pedidos chegariam juntos ao `await`, todos seriam cobrados e só depois 150 descobririam que a poltrona já tinha dono. Mostramos isso no vídeo: o teste falha com "cobrou 200 pessoas por 50 poltronas".
+
+   Se o pagamento falha ou passa de `limitePagamentoMs` (`comTempoLimite`, com `Promise.race`), o `catch` devolve as poltronas com `evento.liberar` e lança `PagamentoErro` (502).
+
+   Limite: o `race` não cancela a cobrança atrasada. Se a operadora aprovar depois do tempo esgotado, o cliente pode ter pago sem levar a poltrona. Num sistema real, isso pediria consultar a operadora ou estornar a cobrança.
+
 2. **OO.** O que o `Evento` esconde e por quê? Por que o `reservar` é tudo ou nada? Por que os erros são uma hierarquia de classes?
 
    O `Evento` esconde a lista de poltronas vendidas num campo privado `#vendidas`. De fora só dá
@@ -72,6 +81,8 @@ curl -X POST localhost:3000/reservas -H 'Content-Type: application/json' \
    paradigma, e se ficaria melhor ou pior.
 5. **Concorrente × paralelo.** O Node roda o JavaScript numa linha só: os pedidos de vocês são
    concorrentes, não paralelos. O que mudaria se a venda rodasse em vários núcleos ao mesmo tempo?
+
+   A nossa garantia vem de não haver `await` entre conferir e marcar a poltrona, porque numa thread só nada roda no meio desse trecho. Com vários núcleos ao mesmo tempo (por exemplo, threads com memória compartilhada, como em Java), dois pedidos poderiam conferir a mesma poltrona no mesmo instante, ver que está livre e os dois marcarem. Isso venderia a poltrona duas vezes, mesmo sem nenhum `await`. Seria preciso tornar o "confere e marca" uma operação atômica: uma trava (lock) em volta do `reservar`, uma operação atômica ou uma transação no banco de dados. Se cada núcleo tivesse a própria cópia do `Evento`, seria preciso também um lugar único com o estado das poltronas.
 
 ### Resultados do bench
 
