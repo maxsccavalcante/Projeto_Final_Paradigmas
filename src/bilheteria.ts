@@ -10,6 +10,25 @@ import { calcularTotal, montarIngressos } from "./preco.ts";
 import { direitoAMeia } from "./regras.ts";
 import type { Comprovante, ConfigBilheteria, EventoInfo, Pedido } from "./tipos.ts";
 
+// Controla o tempo máximo de espera da operadora.
+function comTempoLimite<T>(
+  promessa: Promise<T>,
+  ms: number,
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  const limite = new Promise<never>((_, rejeitar) => {
+    timer = setTimeout(
+      () => rejeitar(new Error("tempo esgotado")),
+      ms,
+    );
+  });
+
+  return Promise.race([promessa, limite]).finally(() => {
+    clearTimeout(timer);
+  });
+}
+
 export class Bilheteria {
   #eventos: Evento[];
   #pagar: Pagamento;
@@ -53,7 +72,10 @@ export class Bilheteria {
 
     // 4. Cobra o pagamento.
     try {
-      await this.#pagar(total);
+      await comTempoLimite(
+        this.#pagar(total),
+        this.#limitePagamentoMs,
+      );
     } catch {
       // Devolve as poltronas se o pagamento falhar.
       evento.liberar(poltronas);
