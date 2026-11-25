@@ -43,7 +43,7 @@ curl -X POST localhost:3000/reservas -H 'Content-Type: application/json' \
 | Nome | Usuário do GitHub | Parte principal |
 | :--- | :--- | :--- |
 | Max Cavalcante | [maxsccavalcante](https://github.com/maxsccavalcante) | Repositório, `regras.ts`, `main.ts`, resultados do bench |
-| Vitor Nóbrega | | `dominio.ts` (orientado a objetos) |
+| Vitor Nóbrega | [Vitornspb](https://github.com/Vitornspb) | `dominio.ts` (orientado a objetos) |
 | Augusto Lustosa | | `preco.ts` (funcional) |
 | Bruno Dutra | | `bilheteria.ts` (concorrente) |
 
@@ -52,6 +52,21 @@ curl -X POST localhost:3000/reservas -H 'Content-Type: application/json' \
 1. **Concorrência.** Como vocês garantem que duas pessoas não ficam com a mesma poltrona? Onde estava o
    `await` perigoso?
 2. **OO.** O que o `Evento` esconde e por quê? Por que o `reservar` é tudo ou nada? Por que os erros são uma hierarquia de classes?
+
+   O `Evento` esconde a lista de poltronas vendidas num campo privado `#vendidas`. De fora só dá
+   para ler `disponivel`, um `get` sem `set`: `evento.disponivel = 999` não muda nada (em módulo,
+   lança `TypeError`). Assim, a única forma de mudar as poltronas é pelos métodos `reservar` e
+   `liberar`, que conferem as regras. Ninguém de fora consegue vender a mesma poltrona duas vezes.
+
+   O `reservar` é tudo ou nada porque um pedido é de uma família que compra junto. O método confere
+   a lista inteira primeiro (lista vazia, poltrona inexistente, repetida ou já vendida) e só marca
+   no fim. Se der erro, nenhuma poltrona fica marcada pela metade.
+
+   Os erros são uma hierarquia (`ErroDeNegocio` abstrata e quatro filhas) porque cada filha guarda
+   o próprio `status` HTTP. O servidor só testa `erro instanceof ErroDeNegocio` e responde
+   `erro.status`, sem `if` ou `switch` para cada tipo de erro. Um erro novo de negócio não muda o
+   servidor.
+
 3. **Funcional.** O que ganhamos com `preco.ts` puro? Como vocês testariam ele sem subir o servidor?
 4. **Se fosse em outro paradigma.** Escolham uma das partes e expliquem como ficaria em outro
    paradigma, e se ficaria melhor ou pior.
