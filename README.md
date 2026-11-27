@@ -44,7 +44,7 @@ curl -X POST localhost:3000/reservas -H 'Content-Type: application/json' \
 | :--- | :--- | :--- |
 | Max Cavalcante | [maxsccavalcante](https://github.com/maxsccavalcante) | Repositório, `regras.ts`, `main.ts`, resultados do bench |
 | Vitor Nóbrega | [Vitornspb](https://github.com/Vitornspb) | `dominio.ts` (orientado a objetos) |
-| Augusto Lustosa | | `preco.ts` (funcional) |
+| Augusto Lustosa | [AugustoLustosaAF](https://github.com/AugustoLustosaAF) | `preco.ts` (funcional) |
 | Bruno Dutra | [brunodutras](https://github.com/brunodutras) | `bilheteria.ts` (concorrente) |
 
 ### Decisões
