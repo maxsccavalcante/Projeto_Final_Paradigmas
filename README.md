@@ -77,12 +77,14 @@ curl -X POST localhost:3000/reservas -H 'Content-Type: application/json' \
    servidor.
 
 3. **Funcional.** O que ganhamos com `preco.ts` puro? Como vocês testariam ele sem subir o servidor?
+
 As funções do `preco.ts` dependem só dos parâmetros e não alteram nada fora delas: não usam `let`, `for` ou `push`, e o `map` e o `reduce` produzem valores novos. Com a mesma entrada, a saída é sempre a mesma, então um pedido não interfere no cálculo de outro. As fábricas `valorDoIngresso` e `aplicarTaxa` devolvem funções reutilizáveis, e o `montarIngressos` recebe a regra da meia por parâmetro, então dá para trocar a regra sem mexer no cálculo.
 
 Para testar, basta importar e chamar, sem servidor ou operadora. Por exemplo, `calcularTotal(montarIngressos(100, [ana, beto], direitoAMeia))` deve dar `165` quando só Ana tem direito à meia.
 
 4. **Se fosse em outro paradigma.** Escolham uma das partes e expliquem como ficaria em outro
    paradigma, e se ficaria melhor ou pior.
+
 Em orientação a objetos, o preço poderia ser uma classe `CalculadoraDePreco`, com um campo `total` e um método `adicionarIngresso()` que vai somando nele. Ficaria pior: o resultado passaria a depender do estado guardado e da ordem das chamadas, uma instância compartilhada entre pedidos poderia misturar os totais, e testar exigiria montar o objeto e conferir seu estado. No funcional, o cálculo é um `map` seguido de um `reduce`, e cada chamada é independente.
 
 5. **Concorrente × paralelo.** O Node roda o JavaScript numa linha só: os pedidos de vocês são
