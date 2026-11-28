@@ -27,6 +27,13 @@ npm start         # serviço em http://localhost:3000
 npm run bench     # com o serviço no ar: 200 pedidos simultâneos no evento 1, dois por poltrona
 ```
 
+Com Docker, o `Dockerfile` da raiz sobe o serviço na porta 3000:
+
+```bash
+docker build -t bilheteria .
+docker run --rm -p 3000:3000 bilheteria
+```
+
 Exemplo de pedido:
 
 ```bash
