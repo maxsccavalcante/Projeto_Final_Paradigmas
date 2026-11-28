@@ -96,9 +96,19 @@ Em orientação a objetos, o preço poderia ser uma classe `CalculadoraDePreco`,
 
 | Cenário | Pedidos | Tempo (ms) | Vendidos | Poltrona ocupada | Falha de pagamento |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| Padrão (`main.ts`) | 200 | | | | |
+| Padrão (`main.ts`) | 200 | 482 | 95 | 100 | 5 |
 
 O bench ocupa as poltronas do evento 1: para rodar de novo, parem o `npm start` (Ctrl+C) e subam outra
 vez.
 
 O que os números mostram:
+
+- **Ninguém levou poltrona repetida.** O evento 1 tem 100 poltronas e o bench manda dois pedidos para
+  cada uma. Os 100 segundos pedidos receberam 409 (poltrona ocupada) sem ser cobrados, porque a
+  poltrona é marcada antes do `await` do pagamento.
+- **5 pagamentos falharam (502).** A operadora falsa recusa cerca de 10% das cobranças ao acaso, então
+  esse número muda a cada execução. As poltronas desses pedidos foram devolvidas com `liberar`: o
+  evento 1 terminou com `disponivel: 5`, e vendidos + falhas de pagamento = 95 + 5 = 100.
+- **Os pedidos não esperam uns pelos outros.** Cada cobrança demora 80 ms. Um pedido por vez levaria
+  cerca de 200 × 80 ms = 16 s, e os 200 terminaram em 482 ms, porque enquanto um pedido espera a
+  operadora o Node atende os outros.
